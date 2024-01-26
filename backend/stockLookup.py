@@ -1,16 +1,8 @@
 import requests
-import json
 import os
-import sys
-import time
-import datetime
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 
 load_dotenv()
-
 
 # get polygon api key
 KEY = os.getenv('POLYGON_API_KEY')
@@ -82,7 +74,3 @@ def get_operating_income(ticker: str):
         return financials
     else:
         return financials.get('operatingIncome')
-
-# print(get_operating_income('AAPL'))
-
-# print(get_low_high("AAPL"))
