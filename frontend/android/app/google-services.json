@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "303682874060",
+    "project_id": "stock-market-lookup",
+    "storage_bucket": "stock-market-lookup.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:303682874060:android:7d2b37fb5cee4e112f3069",
+        "android_client_info": {
+          "package_name": "com.example.stock_market_lookup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCq1QI2LquX74hbib4mNpvjsuVSun74S9U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
