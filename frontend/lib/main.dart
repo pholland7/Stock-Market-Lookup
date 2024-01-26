@@ -37,7 +37,7 @@ class MainApp extends StatelessWidget {
                   fontSize: 48.0,
                   color: white,
                   fontWeight: FontWeight.bold))),
-      home: const LoginPage(), // this changes where the app starts
+      home: const LoginPage(), 
     );
   }
 }

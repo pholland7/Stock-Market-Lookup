@@ -23,17 +23,52 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
   Future<void> _signIn() async {
-    try {
-      await _auth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
+  try {
+    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+    print("User signed in.");
+    _emailController.text = '';
+    _passwordController.text = '';
+    // Check if the sign-in is successful
+    if (userCredential.user != null) {
+      // Navigate to the home page or next screen on successful login
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => HomePage()),
       );
-      // Navigate to home page or next screen on successful login
-    } catch (e) {
-      print('Error: $e');
-      // Handle login failure (show a message, etc.)
+    } else {
+      // Handle case where userCredential.user is null
+      print('Error: User is null after sign-in.');
     }
+  } on FirebaseAuthException catch (e) {
+    // Handle errors during sign-in
+    print('Error: $e');
+    
+    // You can customize the error handling based on different error codes.
+    if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid username or password.')),
+      );
+    } else if (e.code == 'invalid-email') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid email format.')),
+      );
+    } else {
+      // Handle other error cases
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sign-in failed. Please try again later.')),
+      );
+    }
+  } catch (e) {
+    // Handle unexpected errors
+    print('Unexpected error during sign-in: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('An unexpected error occurred. Please try again later.')),
+    );
   }
+}
+
 @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _emailController,
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.all(20.0),
-                  labelText: 'Username',
+                  labelText: 'Email',
                   labelStyle: TextStyle(color: navy),
                   filled: true,
                   fillColor: boxinsides,
@@ -121,23 +156,7 @@ class _LoginPageState extends State<LoginPage> {
                     foregroundColor: MaterialStatePropertyAll<Color>(white),
                     backgroundColor: MaterialStatePropertyAll<Color>(teal),
                   ),
-                  onPressed: () {
-                    // check to make sure username & password are NOT empty
-                    if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
-                      // if the username & password is incorrect, show an error
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Username or password is incorrect.')),
-                      );
-                    } else {
-                      // if one of the fields is empty, show an alert to fill in all fields
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please fill in all fields.')),
-                      );
-                    }
-                  },
+                  onPressed: _signIn,
                   child: const Text('Sign In', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0))
                 )
               ),

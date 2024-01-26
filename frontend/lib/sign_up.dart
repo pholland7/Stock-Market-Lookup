@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:stock_market_lookup/colors.dart';
 import 'package:stock_market_lookup/home_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 
 class User {
@@ -83,6 +85,33 @@ class _SignUpPageState extends State<SignUpPage> {
     return userFormat.hasMatch(username.trim());
   }
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> registerUser() async {
+  try {
+    final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      email: _userEmail.text,
+      password: _userPassword.text,
+    );
+
+    // User registered successfully
+    print('User registered: ${userCredential.user?.uid}');
+
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => HomePage()),
+    );
+  } catch (e) {
+    // Failed to register user
+    print('Failed to register user: $e');
+
+    final snackBar = SnackBar(
+      content: Text('Failed to register user. Please try again. Error: $e'),
+      duration: Duration(seconds: 3),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,49 +147,58 @@ class _SignUpPageState extends State<SignUpPage> {
                     foregroundColor: MaterialStatePropertyAll<Color>(white),
                     backgroundColor: MaterialStatePropertyAll<Color>(teal),
                   ),
-              onPressed: () {
-                
-                if (_userEmail.text.isEmpty || _userPassword.text.isEmpty) {
+                onPressed: () async {
+                  if (_userEmail.text.isEmpty || _userPassword.text.isEmpty) {
                     // Show a warning snackbar to the user
                     final snackBar = SnackBar(
                       content: Text('Please fill out all fields to sign up.'),
                       duration: Duration(seconds: 3),
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                } else {
-                  if (!isValidEmail(_userEmail.text)) {
-                    final snackBar = SnackBar(
-                      content: Text('Invalid email format, please input a valid email'),
-                      duration: Duration(seconds: 3),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  } 
-                  if (!isValidUserOrPass(_userPassword.text)) {
-                    final snackBar = SnackBar(
-                      content: Text('Invalid password, please input a valid password with no spaces'),
-                      duration: Duration(seconds: 3),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  }
-                  final email = _userEmail.text;
-                  final password = _userPassword.text;
-                  // Create a User instance with its info
-                  final user = User(email: email, password: password);
-                  Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => HomePage()),
+                  } else {
+                    if (!isValidEmail(_userEmail.text)) {
+                      // Show an invalid email format snackbar
+                      // (similar for password validation)
+                      final snackBar = SnackBar(
+                        content: Text('Invalid email format, please input a valid email'),
+                        duration: Duration(seconds: 3),
                       );
-                }
-              },
-              child: const Text('Sign Up', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0)),
-            ),
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    } else {
+                      try {
+                        // Use FirebaseAuth to create a user with email and password
+                        final UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                          email: _userEmail.text,
+                          password: _userPassword.text,
+                        );
+
+                        // User registered successfully
+                        print('User registered: ${userCredential.user?.uid}');
+
+                        // Navigate to the home page or any other screen after successful registration
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        );
+                      } catch (e) {
+                        // Handle registration errors
+                        print('Failed to register user: $e');
+
+                        // Show a snackbar or other UI feedback for the user
+                        final snackBar = SnackBar(
+                          content: Text('Failed to register user. Please try again.'),
+                          duration: Duration(seconds: 3),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
+                    }
+                  }
+                },
+                child: const Text('Sign Up', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0)),
+              ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  void registerUser() async{
-
   }
 }

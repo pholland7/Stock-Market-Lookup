@@ -26,7 +26,7 @@ def get_low_high(ticker: str):
         low (float): Low price of stock on given date
         high (float): High price of stock on given date
     """
-    url = f"https://api.polygon.io/v1/open-close/{ticker}/{datetime.today().strftime('%Y-%m-%d')}"
+    url = f"https://api.polygon.io/v1/open-close/{ticker}/{datetime.datetime.today().strftime('%Y-%m-%d')}"
     params = {"apiKey": KEY}
     response = requests.get(url, params=params)
     if response.status_code == 200:
@@ -83,6 +83,6 @@ def get_operating_income(ticker: str):
     else:
         return financials.get('operatingIncome')
 
-print(get_operating_income('AAPL'))
+# print(get_operating_income('AAPL'))
 
-
+# print(get_low_high("AAPL"))
