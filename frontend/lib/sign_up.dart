@@ -22,38 +22,6 @@ class User {
   }
 }
 
-/*
-
-class ApiService {
-  Future<void> registerUser({
-    required String email,
-    required String password,
-  }) async {
-    final url = Uri.parse('http://localhost:3000/api/user'); 
-    final response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
-    );
-
-    if (response.statusCode == 201) {
-      // User registered successfully
-      // You can handle the success scenario as needed
-    } else {
-      // Failed to register user
-      throw Exception('Failed to register user');
-    }
-  }
-}
-
-*/
-
-// creating the page to sign up
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
@@ -62,7 +30,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  //final _apiService = ApiService();
   final _userEmail = TextEditingController();
   final _userPassword = TextEditingController();
   
@@ -79,10 +46,6 @@ class _SignUpPageState extends State<SignUpPage> {
     RegExp emailFormat = RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
     // Check if the email matches the pattern
     return emailFormat.hasMatch(email);
-  }
-  bool isValidUserOrPass (String username) {
-    RegExp userFormat = RegExp(r'^[\w.-]+$');
-    return userFormat.hasMatch(username.trim());
   }
 
   final FirebaseAuth _auth = FirebaseAuth.instance;

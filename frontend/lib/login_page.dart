@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // title: const Text('S.A.M.E'),
+      
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
