@@ -24,7 +24,8 @@ class _HomePageState extends State<HomePage> {
   String BASE_URL =
       'https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api';
   bool isLoading = false;
-  bool showError = true;
+  bool showError = false;
+  bool isFirstOpen = true;
 
   @override
   void dispose() {
@@ -63,12 +64,16 @@ class _HomePageState extends State<HomePage> {
       } else {
         throw Exception('Invalid Input');
       }
+      setState(() {
+        isFirstOpen = false;
+      });
     } catch (e) {
       _showErrorMessage();
       print('Error fetching data: $e');
       setState(() {
         isLoading = false;
         showError = true;
+        isFirstOpen = true;
       });
     }
   }
@@ -188,70 +193,73 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            const Text(
-              'Search for a stock below!',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 30.0, color: navy),
-            ),
-            const Text('(ex. \'AAPL\')',
-                style: TextStyle(fontSize: 14.0, color: navy)),
-            const SizedBox(height: 40),
-            TextField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.all(20.0),
-                labelText: 'Search',
-                labelStyle: TextStyle(color: navy),
-                filled: true,
-                fillColor: boxinsides,
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(40.0)),
-                  borderSide: BorderSide(color: boxinsides),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(40.0)),
-                  borderSide: BorderSide(color: boxinsides),
-                ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              const Text(
+                'Search for a stock below!',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 30.0, color: navy),
               ),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all<Color>(white),
-                backgroundColor: MaterialStateProperty.all<Color>(periwinkle),
-              ),
-              onPressed: () {
-                fetchData(_searchController.text);
-              },
-              child: const Text('Search',
-                  style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
-            ),
-            const SizedBox(height: 40),
-            isLoading
-                ? const Expanded(
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  )
-                : Column(
-                    children: [
-                      _buildInfo("Gross Profit", grossProfit),
-                      _buildInfo("Debt", debt),
-                      _buildInfo("Net Income", netIncome),
-                      _buildInfo("Operating Income", operatingIncome),
-                      _buildNews("News", newsList),
-                    ],
+              const Text('(ex. \'AAPL\')',
+                  style: TextStyle(fontSize: 14.0, color: navy)),
+              const SizedBox(height: 40),
+              TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.all(20.0),
+                  labelText: 'Search',
+                  labelStyle: TextStyle(color: navy),
+                  filled: true,
+                  fillColor: boxinsides,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                    borderSide: BorderSide(color: boxinsides),
                   ),
-          ],
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                    borderSide: BorderSide(color: boxinsides),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                style: ButtonStyle(
+                  foregroundColor: MaterialStateProperty.all<Color>(white),
+                  backgroundColor: MaterialStateProperty.all<Color>(periwinkle),
+                ),
+                onPressed: () {
+                  fetchData(_searchController.text);
+                },
+                child: const Text('Search',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
+              ),
+              const SizedBox(height: 40),
+              isFirstOpen
+                  ? Container()
+                  : isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : Column(
+                          children: [
+                            _buildInfo("Gross Profit", grossProfit),
+                            _buildInfo("Debt", debt),
+                            _buildInfo("Net Income", netIncome),
+                            _buildInfo("Operating Income", operatingIncome),
+                            _buildNews("News", newsList),
+                          ],
+                        ),
+            ],
+          ),
         ),
       ),
     );
   }
+
 
   Widget _buildInfo(String header, String value) {
     return Row(
@@ -286,8 +294,8 @@ class _HomePageState extends State<HomePage> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('• ', style: TextStyle(fontSize: 30)), // Bullet point
-            Expanded(child: newsItem), // News item
+            const Text('• ', style: TextStyle(fontSize: 30)),
+            Expanded(child: newsItem),
           ],
         ),
       );
