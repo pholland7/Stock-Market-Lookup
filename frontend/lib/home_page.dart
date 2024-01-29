@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 
 import 'package:stock_market_lookup/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -20,7 +21,8 @@ class _HomePageState extends State<HomePage> {
   String debt = '';
   String netIncome = '';
   String operatingIncome = '';
-  String BASE_URL = 'https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api';
+  String BASE_URL =
+      'https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api';
   bool isLoading = false;
   bool showError = true;
 
@@ -31,7 +33,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   String formatCurrency(num number) {
-    final format = NumberFormat.currency(locale: "en_US", symbol: "\$", decimalDigits: 0);
+    final format =
+        NumberFormat.currency(locale: "en_US", symbol: "\$", decimalDigits: 0);
     return format.format(number);
   }
 
@@ -51,7 +54,7 @@ class _HomePageState extends State<HomePage> {
       if (newsResponse.isNotEmpty) {
         setState(() {
           grossProfit = '$grossProfitResponse';
-          financials = '$financialsResponse';
+          debt = '$debtResponse';
           netIncome = '$netIncomeResponse';
           operatingIncome = '$operatingIncomeResponse';
           newsList = newsResponse;
@@ -112,7 +115,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<dynamic> getGrossProfit(String input) async {
     final response = await http.get(Uri.parse('$BASE_URL/gross_profit/$input'));
-    final grossProfit = formatCurrency(jsonDecode(response.body)["grossProfit"]);
+    final grossProfit =
+        formatCurrency(jsonDecode(response.body)["grossProfit"]);
     if (response.statusCode == 200) {
       return grossProfit;
     } else {
@@ -167,8 +171,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<dynamic> getOperatingIncome(String input) async {
-    final response = await http.get(Uri.parse('$BASE_URL/operating_income/$input'));
-    final operatingIncome = formatCurrency(jsonDecode(response.body)["operatingIncome"]);
+    final response =
+        await http.get(Uri.parse('$BASE_URL/operating_income/$input'));
+    final operatingIncome =
+        formatCurrency(jsonDecode(response.body)["operatingIncome"]);
     if (response.statusCode == 200) {
       return operatingIncome;
     } else {
