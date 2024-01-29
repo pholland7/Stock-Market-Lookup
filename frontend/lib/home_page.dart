@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   String operatingIncome = '';
   String BASE_URL = 'https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api';
   bool isLoading = false;
-  bool showError = false;
+  bool showError = true;
 
   @override
   void dispose() {
