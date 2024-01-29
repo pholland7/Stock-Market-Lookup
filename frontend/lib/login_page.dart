@@ -74,7 +74,8 @@ class _LoginPageState extends State<LoginPage> {
           child:  Column(
             children: <Widget>[
               const SizedBox(height: 20), 
-              const Text('Welcome!', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0)),
+              const Text('Stock Market Lookup', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0)),
+              const SizedBox(height: 20),
               const Text('Login with your credentials below.', style: TextStyle(fontSize: 14.0)),
               const SizedBox(height: 40),
               TextField(
@@ -124,11 +125,11 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(color: Colors.black)
                   ),
                   TextSpan(
-                    text: "Register here",
+                    text: "Sign-up here.",
                     style: const TextStyle(color: blue, decoration: TextDecoration.underline),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        print("Go to register page"); // insert navigation to register page
+                        print("Go to register page!"); // insert navigation to register page
                         Navigator.push(
                         context,
                         MaterialPageRoute(
