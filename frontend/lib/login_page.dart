@@ -31,21 +31,15 @@ class _LoginPageState extends State<LoginPage> {
     print("User signed in.");
     _emailController.text = '';
     _passwordController.text = '';
-    // Check if the sign-in is successful
     if (userCredential.user != null) {
-      // Navigate to the home page or next screen on successful login
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => HomePage()),
       );
     } else {
-      // Handle case where userCredential.user is null
       print('Error: User is null after sign-in.');
     }
   } on FirebaseAuthException catch (e) {
-    // Handle errors during sign-in
     print('Error: $e');
-    
-    // You can customize the error handling based on different error codes.
     if (e.code == 'user-not-found' || e.code == 'wrong-password') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invalid username or password.')),
@@ -55,13 +49,11 @@ class _LoginPageState extends State<LoginPage> {
         const SnackBar(content: Text('Invalid email format.')),
       );
     } else {
-      // Handle other error cases
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Sign-in failed. Please try again later.')),
       );
     }
   } catch (e) {
-    // Handle unexpected errors
     print('Unexpected error during sign-in: $e');
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('An unexpected error occurred. Please try again later.')),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:stock_market_lookup/colors.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -16,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   String financials = '';
   String netIncome = '';
   String operatingIncome = '';
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -25,21 +28,29 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchData(String input) async {
     try {
+      setState(() {
+        isLoading = true;
+      });
+
       final grossProfitResponse = await getGrossProfit(input);
       final newsResponse = await getNews(input);
       final financialsResponse = await getFinancials(input);
       final netIncomeResponse = await getNetIncome(input);
       final operatingIncomeResponse = await getOperatingIncome(input);
+
       setState(() {
-        grossProfit = 'Gross Profit: $grossProfitResponse';
-        news = 'News: $newsResponse';
-        financials = 'Financials: $financialsResponse';
-        netIncome = 'Net Income: $netIncomeResponse';
-        operatingIncome = 'Operating Income: $operatingIncomeResponse';
+        grossProfit = '$grossProfitResponse';
+        financials = '$financialsResponse';
+        netIncome = '$netIncomeResponse';
+        operatingIncome = '$operatingIncomeResponse';
+        news = '$newsResponse';
+        isLoading = false;
       });
     } catch (e) {
-      // Handle errors
       print('Error fetching data: $e');
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -97,7 +108,6 @@ class _HomePageState extends State<HomePage> {
       throw Exception('Failed to load operating income.');
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,37 +115,99 @@ class _HomePageState extends State<HomePage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             const Text(
               'Search for a stock below!',
-              style: TextStyle(fontSize: 24),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0, color: navy),
             ),
-            const Text(
-              '(ie. \'AAPL\')',
-              style: TextStyle(fontSize: 18),
-            ),
+            const Text('(ie. \'AAPL\')', style: TextStyle(fontSize: 14.0, color: navy)),
+            const SizedBox(height: 40),
             TextField(
               controller: _searchController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
+                contentPadding: EdgeInsets.all(20.0),
                 labelText: 'Search',
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    fetchData(_searchController.text);
-                  },
-                  icon: const Icon(Icons.search),
+                labelStyle: TextStyle(color: navy),
+                filled: true,
+                fillColor: boxinsides,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                  borderSide: BorderSide(color: boxinsides),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                  borderSide: BorderSide(color: boxinsides),
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            Text(grossProfit),
-            Text(news),
-            Text(financials),
-            Text(netIncome),
-            Text(operatingIncome),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(white),
+                backgroundColor: MaterialStateProperty.all<Color>(teal),
+              ),
+              onPressed: () {
+                fetchData(_searchController.text);
+              },
+              child: const Text('Search', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
+            ),
+            const SizedBox(height: 40),
+            isLoading
+                ? const Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : Column(
+                    children: [
+                      _buildInfo("Gross Profit", grossProfit),
+                      _buildInfo("Financials", financials),
+                      _buildInfo("Net Income", netIncome),
+                      _buildInfo("Operating Income", operatingIncome),
+                      _buildNews("News", news),
+                    ],
+                  ),
           ],
         ),
       ),
     );
   }
+
+
+  Widget _buildInfo(String header, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Text(
+          "$header: ",
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: navy),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.normal, color: navy),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNews(String header, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "$header: ",
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: navy),
+        ),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: navy),
+        ),
+      ],
+    );
+  }
+
 }
