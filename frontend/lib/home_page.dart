@@ -1,9 +1,7 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:stock_market_lookup/colors.dart';
 
@@ -21,8 +19,7 @@ class _HomePageState extends State<HomePage> {
   String financials = '';
   String netIncome = '';
   String operatingIncome = '';
-  String BASE_URL =
-      'https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api';
+  String BASE_URL = 'https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api';
   bool isLoading = false;
 
   @override
@@ -32,8 +29,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   String formatCurrency(num number) {
-    final format =
-        NumberFormat.currency(locale: "en_US", symbol: "\$", decimalDigits: 0);
+    final format = NumberFormat.currency(locale: "en_US", symbol: "\$", decimalDigits: 0);
     return format.format(number);
   }
 
@@ -67,8 +63,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<dynamic> getGrossProfit(String input) async {
     final response = await http.get(Uri.parse('$BASE_URL/gross_profit/$input'));
-    final grossProfit =
-        formatCurrency(jsonDecode(response.body)["grossProfit"]);
+    final grossProfit = formatCurrency(jsonDecode(response.body)["grossProfit"]);
     if (response.statusCode == 200) {
       return grossProfit;
     } else {
@@ -91,8 +86,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<dynamic> getFinancials(String input) async {
     final response = await http.get(Uri.parse('$BASE_URL/financials/$input'));
-    final financials =
-        formatCurrency(jsonDecode(response.body)["netIncome"]["currentRatio"]);
+    final financials = formatCurrency(jsonDecode(response.body)["netIncome"]["currentRatio"]);
     if (response.statusCode == 200) {
       return financials;
     } else {
@@ -111,16 +105,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<dynamic> getOperatingIncome(String input) async {
-    final response =
-        await http.get(Uri.parse('$BASE_URL/operating_income/$input'));
-    final operatingIncome =
-        formatCurrency(jsonDecode(response.body)["operatingIncome"]);
+    final response = await http.get(Uri.parse('$BASE_URL/operating_income/$input'));
+    final operatingIncome = formatCurrency(jsonDecode(response.body)["operatingIncome"]);
     if (response.statusCode == 200) {
       return operatingIncome;
     } else {
       throw Exception('Failed to load operating income.');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,7 +152,7 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
               style: ButtonStyle(
                 foregroundColor: MaterialStateProperty.all<Color>(white),
-                backgroundColor: MaterialStateProperty.all<Color>(teal),
+                backgroundColor: MaterialStateProperty.all<Color>(periwinkle),
               ),
               onPressed: () {
                 fetchData(_searchController.text);
@@ -167,27 +160,27 @@ class _HomePageState extends State<HomePage> {
               child: const Text('Search', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
             ),
             const SizedBox(height: 40),
-            isLoading
-                ? const Expanded(
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  )
-                : Column(
-                    children: [
-                      _buildInfo("Gross Profit", grossProfit),
-                      _buildInfo("Financials", financials),
-                      _buildInfo("Net Income", netIncome),
-                      _buildInfo("Operating Income", operatingIncome),
-                      _buildNews("News", news),
-                    ],
-                  ),
+            if (isLoading)
+              const Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (grossProfit.isNotEmpty)
+              Column(
+                children: [
+                  _buildInfo("Gross Profit", grossProfit),
+                  _buildInfo("Financials", financials),
+                  _buildInfo("Net Income", netIncome),
+                  _buildInfo("Operating Income", operatingIncome),
+                  _buildNews("News", news),
+                ],
+              ),
           ],
         ),
       ),
     );
   }
-
 
   Widget _buildInfo(String header, String value) {
     return Row(

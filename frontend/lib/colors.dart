@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-const MaterialColor teal = MaterialColor(_tealPrimaryValue, <int, Color>{
-  50: Color(0xFFECF6F9),
-  100: Color(0xFFD0E9EF),
-  200: Color(0xFFB1DBE5),
-  300: Color(0xFF91CCDB),
-  400: Color(0xFF7AC1D3),
-  500: Color(_tealPrimaryValue),
-  600: Color(0xFF5AAFC6),
-  700: Color(0xFF50A6BE),
-  800: Color(0xFF469EB8),
-  900: Color(0xFF348EAC),
+const MaterialColor periwinkle = MaterialColor(_periwinklePrimaryValue, <int, Color>{
+  50: Color(0xFFECF0F9),
+  100: Color(0xFFD0DAE9),
+  200: Color(0xFFB1C4DB),
+  300: Color(0xFF91AED0),
+  400: Color(0xFF7AA0C5),
+  500: Color(_periwinklePrimaryValue),
+  600: Color(0xFF5A8EB9),
+  700: Color(0xFF5082AF),
+  800: Color(0xFF4678A5),
+  900: Color(0xFF346994),
 });
-const int _tealPrimaryValue = 0xFF62B6CB;
+const int _periwinklePrimaryValue = 0xFF678BB1;
 
 const MaterialColor background =
     MaterialColor(_backgroundPrimaryValue, <int, Color>{
@@ -43,8 +43,6 @@ const MaterialColor navy = MaterialColor(_navyPrimaryValue, <int, Color>{
 });
 const int _navyPrimaryValue = 0xFF1B4965;
 
-// Note: checkbox outlines are 100%, but symptom box outlines are 25%
-
 const MaterialColor blue = MaterialColor(_bluePrimaryValue, <int, Color>{
   50: Color(0xFFECF5FA),
   100: Color(0xFFCFE5F2),
@@ -58,8 +56,6 @@ const MaterialColor blue = MaterialColor(_bluePrimaryValue, <int, Color>{
   900: Color(0xFF327DB7),
 });
 const int _bluePrimaryValue = 0xFF5FA8D3;
-
-// these are used for symptoms box insides
 
 const MaterialColor boxinsides =
     MaterialColor(_boxinsidesPrimaryValue, <int, Color>{
@@ -77,7 +73,7 @@ const MaterialColor boxinsides =
 const int _boxinsidesPrimaryValue = 0xFFE7F4FD;
 
 const MaterialColor white = MaterialColor(_whitePrimaryValue, <int, Color>{
-  50: Color(0xFFFFFFFF), // You can adjust shades of white if needed
+  50: Color(0xFFFFFFFF), 
   100: Color(0xFFFFFFFF),
   200: Color(0xFFFFFFFF),
   300: Color(0xFFFFFFFF),

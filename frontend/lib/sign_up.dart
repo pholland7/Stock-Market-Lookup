@@ -106,7 +106,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: ElevatedButton(
                   style:  const ButtonStyle(
                     foregroundColor: MaterialStatePropertyAll<Color>(white),
-                    backgroundColor: MaterialStatePropertyAll<Color>(teal),
+                    backgroundColor: MaterialStatePropertyAll<Color>(periwinkle),
                   ),
                 onPressed: () async {
                   if (_userEmail.text.isEmpty || _userPassword.text.isEmpty) {

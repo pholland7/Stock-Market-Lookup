@@ -146,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: ElevatedButton(
                   style:  const ButtonStyle(
                     foregroundColor: MaterialStatePropertyAll<Color>(white),
-                    backgroundColor: MaterialStatePropertyAll<Color>(teal),
+                    backgroundColor: MaterialStatePropertyAll<Color>(periwinkle),
                   ),
                   onPressed: _signIn,
                   child: const Text('Sign In', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0))
