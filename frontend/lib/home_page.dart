@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   String operatingIncome = '';
   String BASE_URL = 'https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api';
   bool isLoading = false;
+  bool showError = false;
 
   @override
   void dispose() {
@@ -37,6 +38,7 @@ class _HomePageState extends State<HomePage> {
     try {
       setState(() {
         isLoading = true;
+        showError = false;
       });
 
       final grossProfitResponse = await getGrossProfit(input);
@@ -45,20 +47,66 @@ class _HomePageState extends State<HomePage> {
       final netIncomeResponse = await getNetIncome(input);
       final operatingIncomeResponse = await getOperatingIncome(input);
 
-      setState(() {
-        grossProfit = '$grossProfitResponse';
-        financials = '$financialsResponse';
-        netIncome = '$netIncomeResponse';
-        operatingIncome = '$operatingIncomeResponse';
-        news = '$newsResponse';
-        isLoading = false;
-      });
+      if (newsResponse.isNotEmpty) {
+        setState(() {
+          grossProfit = '$grossProfitResponse';
+          financials = '$financialsResponse';
+          netIncome = '$netIncomeResponse';
+          operatingIncome = '$operatingIncomeResponse';
+          news = '$newsResponse';
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Invalid Input');
+      }
     } catch (e) {
+      _showErrorMessage();
       print('Error fetching data: $e');
       setState(() {
         isLoading = false;
+        showError = true;
       });
     }
+  }
+
+  void _showErrorMessage() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Invalid Input',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: navy,
+            ),
+          ),
+          content: const Text(
+            'Please enter a valid stock ticker.',
+            style: TextStyle(
+              fontSize: 16,
+              color: navy,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: periwinkle,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<dynamic> getGrossProfit(String input) async {
@@ -166,7 +214,7 @@ class _HomePageState extends State<HomePage> {
                   child: CircularProgressIndicator(),
                 ),
               )
-            else if (grossProfit.isNotEmpty)
+            else if (!showError)
               Column(
                 children: [
                   _buildInfo("Gross Profit", grossProfit),
