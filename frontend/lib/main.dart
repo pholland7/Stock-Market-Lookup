@@ -22,12 +22,12 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Stock Market Lookup',
       theme: ThemeData(
-          primarySwatch: teal,
+          primarySwatch: periwinkle,
           textSelectionTheme: const TextSelectionThemeData(cursorColor: navy),
           fontFamily: "PT Serif",
           scaffoldBackgroundColor: background,
           appBarTheme: const AppBarTheme(
-              backgroundColor: teal,
+              backgroundColor: periwinkle,
               centerTitle: true,
               titleTextStyle: TextStyle(
                   fontFamily: "PT Serif",
