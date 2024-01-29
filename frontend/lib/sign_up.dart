@@ -76,88 +76,102 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-      ),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            const Text('Sign Up', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _userEmail,
-              decoration: const InputDecoration(
-                labelText: 'Email',
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              const Text('Sign Up',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 30.0, color: navy)),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _userEmail,
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.all(20.0),
+                  labelText: 'Email',
+                  labelStyle: TextStyle(color: navy),
+                  filled: true,
+                  fillColor: boxinsides,
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                      borderSide: BorderSide(color: boxinsides)),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                      borderSide: BorderSide(color: boxinsides)),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _userPassword,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Password',
+              const SizedBox(height: 20),
+              TextField(
+                controller: _userPassword,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.all(20.0),
+                  labelText: 'Password',
+                  labelStyle: TextStyle(color: navy),
+                  filled: true,
+                  fillColor: boxinsides,
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                      borderSide: BorderSide(color: boxinsides, width: 0)),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                      borderSide: BorderSide(color: boxinsides, width: 0)),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
+              const SizedBox(height: 20),
+              SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: 50,
                 child: ElevatedButton(
-                  style:  const ButtonStyle(
+                  style: const ButtonStyle(
                     foregroundColor: MaterialStatePropertyAll<Color>(white),
                     backgroundColor: MaterialStatePropertyAll<Color>(periwinkle),
                   ),
-                onPressed: () async {
-                  if (_userEmail.text.isEmpty || _userPassword.text.isEmpty) {
-                    // Show a warning snackbar to the user
-                    final snackBar = SnackBar(
-                      content: Text('Please fill out all fields to sign up.'),
-                      duration: Duration(seconds: 3),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  } else {
-                    if (!isValidEmail(_userEmail.text)) {
-                      // Show an invalid email format snackbar
-                      // (similar for password validation)
-                      final snackBar = SnackBar(
-                        content: Text('Invalid email format, please input a valid email'),
+                  onPressed: () async {
+                    if (_userEmail.text.isEmpty || _userPassword.text.isEmpty) {
+                      const snackBar = SnackBar(
+                        content: Text('Please fill out all fields to sign up.'),
                         duration: Duration(seconds: 3),
                       );
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     } else {
-                      try {
-                        // Use FirebaseAuth to create a user with email and password
-                        final UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                          email: _userEmail.text,
-                          password: _userPassword.text,
-                        );
-
-                        // User registered successfully
-                        print('User registered: ${userCredential.user?.uid}');
-
-                        // Navigate to the home page or any other screen after successful registration
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => HomePage()),
-                        );
-                      } catch (e) {
-                        // Handle registration errors
-                        print('Failed to register user: $e');
-
-                        // Show a snackbar or other UI feedback for the user
-                        final snackBar = SnackBar(
-                          content: Text('Failed to register user. Please try again.'),
+                      if (!isValidEmail(_userEmail.text)) {
+                        const snackBar = SnackBar(
+                          content: Text('Invalid email format, please input a valid email'),
                           duration: Duration(seconds: 3),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else {
+                        try {
+                          final UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                            email: _userEmail.text,
+                            password: _userPassword.text,
+                          );
+                          print('User registered: ${userCredential.user?.uid}');
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => HomePage()),
+                          );
+                        } catch (e) {
+                          print('Failed to register user: $e');
+                          const snackBar = SnackBar(
+                            content: Text('Failed to register user. Please try again.'),
+                            duration: Duration(seconds: 3),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
                       }
                     }
-                  }
-                },
-                child: const Text('Sign Up', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0)),
+                  },
+                  child: const Text('Sign Up',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 24.0)),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -61,103 +61,106 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-      
-      ),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Align(
           alignment: Alignment.center,
-          child:  Column(
-            children: <Widget>[
-              const SizedBox(height: 20), 
-              const Text('Stock Market Lookup', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0)),
-              const SizedBox(height: 20),
-              const Text('Login with your credentials below.', style: TextStyle(fontSize: 14.0)),
-              const SizedBox(height: 40),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.all(20.0),
-                  labelText: 'Email',
-                  labelStyle: TextStyle(color: navy),
-                  filled: true,
-                  fillColor: boxinsides,
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(40.0)),
-                    borderSide: BorderSide(color: boxinsides)
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(40.0)),
-                    borderSide: BorderSide(color: boxinsides)
-                  )
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                const SizedBox(height: 20),
+                const Text('Stock Market Lookup',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 30.0)),
+                const SizedBox(height: 20),
+                const Text('Login with your credentials below.',
+                    style: TextStyle(fontSize: 14.0)),
+                const SizedBox(height: 40),
+                TextField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.all(20.0),
+                      labelText: 'Email',
+                      labelStyle: TextStyle(color: navy),
+                      filled: true,
+                      fillColor: boxinsides,
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                          borderSide: BorderSide(color: boxinsides)),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                          borderSide: BorderSide(color: boxinsides))),
                 ),
-              ),
-              const SizedBox(height: 30),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.all(20.0),
-                  labelText: 'Password',
-                  labelStyle: TextStyle(color: navy),
-                  filled: true,
-                  fillColor: boxinsides,
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(40.0)),
-                    borderSide: BorderSide(color: boxinsides, width: 0)
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(40.0)),
-                    borderSide: BorderSide(color: boxinsides, width: 0)
+                const SizedBox(height: 30),
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.all(20.0),
+                    labelText: 'Password',
+                    labelStyle: TextStyle(color: navy),
+                    filled: true,
+                    fillColor: boxinsides,
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                        borderSide: BorderSide(color: boxinsides, width: 0)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(40.0)),
+                        borderSide: BorderSide(color: boxinsides, width: 0)),
                   ),
                 ),
-              ),
-              const SizedBox(height: 40),
-              RichText(text: TextSpan(
-                style: const TextStyle(fontFamily: "PT Serif"),
-                children: <TextSpan>[
-                  const TextSpan(
-                    text: "Don't have an account?  ",
-                    style: TextStyle(color: Colors.black)
+                const SizedBox(height: 40),
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(fontFamily: "PT Serif"),
+                    children: <TextSpan>[
+                      const TextSpan(
+                        text: "Don't have an account?  ",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      TextSpan(
+                        text: "Sign-up here.",
+                        style: const TextStyle(
+                            color: blue, decoration: TextDecoration.underline),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            print("Go to register page!");
+                            // insert navigation to register page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SignUpPage(),
+                              ),
+                            );
+                          },
+                      ),
+                    ],
                   ),
-                  TextSpan(
-                    text: "Sign-up here.",
-                    style: const TextStyle(color: blue, decoration: TextDecoration.underline),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        print("Go to register page!"); // insert navigation to register page
-                        Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SignUpPage(),
+                ),
+                const SizedBox(height: 40),
+                SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 50,
+                    child: ElevatedButton(
+                        style: const ButtonStyle(
+                          foregroundColor: MaterialStatePropertyAll<Color>(white),
+                          backgroundColor: MaterialStatePropertyAll<Color>(periwinkle),
                         ),
-                      );
-                      } 
-                  ),
-                ],
-              )),
-              const SizedBox(height: 40),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: ElevatedButton(
-                  style:  const ButtonStyle(
-                    foregroundColor: MaterialStatePropertyAll<Color>(white),
-                    backgroundColor: MaterialStatePropertyAll<Color>(periwinkle),
-                  ),
-                  onPressed: _signIn,
-                  child: const Text('Sign In', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0))
-                )
-              ),
-              const SizedBox(height: 30),
-            ],
+                        onPressed: _signIn,
+                        child: const Text('Sign In',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 24.0)))),
+                const SizedBox(height: 30),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
 }
