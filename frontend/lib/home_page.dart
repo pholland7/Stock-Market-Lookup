@@ -1,9 +1,7 @@
-// import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:stock_market_lookup/colors.dart';
 
@@ -22,9 +20,9 @@ class _HomePageState extends State<HomePage> {
   String debt = '';
   String netIncome = '';
   String operatingIncome = '';
-  String BASE_URL =
-      'https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api';
+  String BASE_URL = 'https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api';
   bool isLoading = false;
+  bool showError = true;
 
   @override
   void dispose() {
@@ -33,8 +31,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   String formatCurrency(num number) {
-    final format =
-        NumberFormat.currency(locale: "en_US", symbol: "\$", decimalDigits: 0);
+    final format = NumberFormat.currency(locale: "en_US", symbol: "\$", decimalDigits: 0);
     return format.format(number);
   }
 
@@ -42,6 +39,7 @@ class _HomePageState extends State<HomePage> {
     try {
       setState(() {
         isLoading = true;
+        showError = false;
       });
 
       final grossProfitResponse = await getGrossProfit(input);
@@ -50,27 +48,71 @@ class _HomePageState extends State<HomePage> {
       final netIncomeResponse = await getNetIncome(input);
       final operatingIncomeResponse = await getOperatingIncome(input);
 
-      setState(() {
-        grossProfit = '$grossProfitResponse';
-        debt = '$debtResponse';
-        netIncome = '$netIncomeResponse';
-        operatingIncome = '$operatingIncomeResponse';
-        // news = '$newsResponse';
-        newsList = newsResponse;
-        isLoading = false;
-      });
+      if (newsResponse.isNotEmpty) {
+        setState(() {
+          grossProfit = '$grossProfitResponse';
+          financials = '$financialsResponse';
+          netIncome = '$netIncomeResponse';
+          operatingIncome = '$operatingIncomeResponse';
+          newsList = newsResponse;
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Invalid Input');
+      }
     } catch (e) {
+      _showErrorMessage();
       print('Error fetching data: $e');
       setState(() {
         isLoading = false;
+        showError = true;
       });
     }
   }
 
+  void _showErrorMessage() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Invalid Input',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: navy,
+            ),
+          ),
+          content: const Text(
+            'Please enter a valid stock ticker.',
+            style: TextStyle(
+              fontSize: 16,
+              color: navy,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: periwinkle,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<dynamic> getGrossProfit(String input) async {
     final response = await http.get(Uri.parse('$BASE_URL/gross_profit/$input'));
-    final grossProfit =
-        formatCurrency(jsonDecode(response.body)["grossProfit"]);
+    final grossProfit = formatCurrency(jsonDecode(response.body)["grossProfit"]);
     if (response.statusCode == 200) {
       return grossProfit;
     } else {
@@ -125,10 +167,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<dynamic> getOperatingIncome(String input) async {
-    final response =
-        await http.get(Uri.parse('$BASE_URL/operating_income/$input'));
-    final operatingIncome =
-        formatCurrency(jsonDecode(response.body)["operatingIncome"]);
+    final response = await http.get(Uri.parse('$BASE_URL/operating_income/$input'));
+    final operatingIncome = formatCurrency(jsonDecode(response.body)["operatingIncome"]);
     if (response.statusCode == 200) {
       return operatingIncome;
     } else {
@@ -176,7 +216,7 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
               style: ButtonStyle(
                 foregroundColor: MaterialStateProperty.all<Color>(white),
-                backgroundColor: MaterialStateProperty.all<Color>(teal),
+                backgroundColor: MaterialStateProperty.all<Color>(periwinkle),
               ),
               onPressed: () {
                 fetchData(_searchController.text);
