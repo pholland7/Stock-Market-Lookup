@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 
 import 'package:stock_market_lookup/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,10 +17,12 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   String grossProfit = '';
   String news = '';
-  String financials = '';
+  List<Widget> newsList = [];
+  String debt = '';
   String netIncome = '';
   String operatingIncome = '';
-  String BASE_URL = 'https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api';
+  String BASE_URL =
+      'https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api';
   bool isLoading = false;
   bool showError = true;
 
@@ -30,7 +33,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   String formatCurrency(num number) {
-    final format = NumberFormat.currency(locale: "en_US", symbol: "\$", decimalDigits: 0);
+    final format =
+        NumberFormat.currency(locale: "en_US", symbol: "\$", decimalDigits: 0);
     return format.format(number);
   }
 
@@ -43,17 +47,17 @@ class _HomePageState extends State<HomePage> {
 
       final grossProfitResponse = await getGrossProfit(input);
       final newsResponse = await getNews(input);
-      final financialsResponse = await getFinancials(input);
+      final debtResponse = await getFinancials(input);
       final netIncomeResponse = await getNetIncome(input);
       final operatingIncomeResponse = await getOperatingIncome(input);
 
       if (newsResponse.isNotEmpty) {
         setState(() {
           grossProfit = '$grossProfitResponse';
-          financials = '$financialsResponse';
+          debt = '$debtResponse';
           netIncome = '$netIncomeResponse';
           operatingIncome = '$operatingIncomeResponse';
-          news = '$newsResponse';
+          newsList = newsResponse;
           isLoading = false;
         });
       } else {
@@ -111,7 +115,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<dynamic> getGrossProfit(String input) async {
     final response = await http.get(Uri.parse('$BASE_URL/gross_profit/$input'));
-    final grossProfit = formatCurrency(jsonDecode(response.body)["grossProfit"]);
+    final grossProfit =
+        formatCurrency(jsonDecode(response.body)["grossProfit"]);
     if (response.statusCode == 200) {
       return grossProfit;
     } else {
@@ -119,14 +124,26 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<dynamic> getNews(String input) async {
+  Future<List<Widget>> getNews(String input) async {
     final response = await http.get(Uri.parse('$BASE_URL/news/$input'));
     if (response.statusCode == 200) {
-      String newsStories = "";
-      for (int i = 0; i < jsonDecode(response.body).length; i++) {
-        newsStories += jsonDecode(response.body)[i][0] + '\n';
+      final news = jsonDecode(response.body);
+      List<Widget> newsWidgets = [];
+      for (var newsItem in news) {
+        String text = newsItem[0];
+        String url = newsItem[1];
+
+        newsWidgets.add(
+          InkWell(
+            onTap: () => launchUrl(Uri.parse(url)),
+            child: Text(
+              text,
+              style: const TextStyle(color: Colors.blue),
+            ),
+          ),
+        );
       }
-      return newsStories;
+      return newsWidgets;
     } else {
       throw Exception('Failed to load news.');
     }
@@ -134,7 +151,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<dynamic> getFinancials(String input) async {
     final response = await http.get(Uri.parse('$BASE_URL/financials/$input'));
-    final financials = formatCurrency(jsonDecode(response.body)["netIncome"]["currentRatio"]);
+    final financials =
+        formatCurrency(jsonDecode(response.body)['netIncome']["debt"]);
     if (response.statusCode == 200) {
       return financials;
     } else {
@@ -153,8 +171,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<dynamic> getOperatingIncome(String input) async {
-    final response = await http.get(Uri.parse('$BASE_URL/operating_income/$input'));
-    final operatingIncome = formatCurrency(jsonDecode(response.body)["operatingIncome"]);
+    final response =
+        await http.get(Uri.parse('$BASE_URL/operating_income/$input'));
+    final operatingIncome =
+        formatCurrency(jsonDecode(response.body)["operatingIncome"]);
     if (response.statusCode == 200) {
       return operatingIncome;
     } else {
@@ -174,9 +194,11 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 20),
             const Text(
               'Search for a stock below!',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0, color: navy),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 30.0, color: navy),
             ),
-            const Text('(ie. \'AAPL\')', style: TextStyle(fontSize: 14.0, color: navy)),
+            const Text('(ex. \'AAPL\')',
+                style: TextStyle(fontSize: 14.0, color: navy)),
             const SizedBox(height: 40),
             TextField(
               controller: _searchController,
@@ -205,25 +227,26 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 fetchData(_searchController.text);
               },
-              child: const Text('Search', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
+              child: const Text('Search',
+                  style:
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
             ),
             const SizedBox(height: 40),
-            if (isLoading)
-              const Expanded(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            else if (!showError)
-              Column(
-                children: [
-                  _buildInfo("Gross Profit", grossProfit),
-                  _buildInfo("Financials", financials),
-                  _buildInfo("Net Income", netIncome),
-                  _buildInfo("Operating Income", operatingIncome),
-                  _buildNews("News", news),
-                ],
-              ),
+            isLoading
+                ? const Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : Column(
+                    children: [
+                      _buildInfo("Gross Profit", grossProfit),
+                      _buildInfo("Debt", debt),
+                      _buildInfo("Net Income", netIncome),
+                      _buildInfo("Operating Income", operatingIncome),
+                      _buildNews("News", newsList),
+                    ],
+                  ),
           ],
         ),
       ),
@@ -236,31 +259,42 @@ class _HomePageState extends State<HomePage> {
       children: [
         Text(
           "$header: ",
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: navy),
+          style: const TextStyle(
+              fontSize: 20, fontWeight: FontWeight.bold, color: navy),
         ),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.normal, color: navy),
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.normal, color: navy),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildNews(String header, String value) {
+  Widget _buildNews(String header, List<Widget> news) {
+    List<Widget> childrenList = [
+      Text(
+        "$header: ",
+        style: const TextStyle(
+            fontSize: 20, fontWeight: FontWeight.bold, color: navy),
+      )
+    ];
+    for (Widget newsItem in news) {
+      childrenList.add(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('• ', style: TextStyle(fontSize: 30)), // Bullet point
+            Expanded(child: newsItem), // News item
+          ],
+        ),
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "$header: ",
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: navy),
-        ),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: navy),
-        ),
-      ],
+      children: childrenList,
     );
   }
 }

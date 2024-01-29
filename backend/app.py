@@ -13,7 +13,7 @@ def api_get_news(ticker):
 @app.route('/api/financials/<ticker>', methods=['GET'])
 def api_get_financials(ticker):
     result = get_financials(ticker)
-    return jsonify({"netIncome": result})
+    return jsonify({"financials": result})
 
 @app.route('/api/net_income/<ticker>', methods=['GET'])
 def api_get_net_income(ticker):
