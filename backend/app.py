@@ -1,6 +1,8 @@
 from flask import Flask, jsonify
 from stockLookup import get_news, get_financials
 
+# git subtree push --prefix backend origin backend
+
 app = Flask(__name__)
 
 @app.route('/api/news/<ticker>', methods=['GET'])

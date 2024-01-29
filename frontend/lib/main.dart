@@ -5,12 +5,11 @@ import 'package:stock_market_lookup/colors.dart';
 import 'package:stock_market_lookup/login_page.dart';
 import 'firebase_options.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-);
+  );
   runApp(MainApp());
 }
 
@@ -24,9 +23,7 @@ class MainApp extends StatelessWidget {
       title: 'Stock Market Lookup',
       theme: ThemeData(
           primarySwatch: teal,
-          textSelectionTheme: const TextSelectionThemeData(
-            cursorColor: navy
-          ),
+          textSelectionTheme: const TextSelectionThemeData(cursorColor: navy),
           fontFamily: "PT Serif",
           scaffoldBackgroundColor: background,
           appBarTheme: const AppBarTheme(
@@ -37,7 +34,7 @@ class MainApp extends StatelessWidget {
                   fontSize: 48.0,
                   color: white,
                   fontWeight: FontWeight.bold))),
-      home: const LoginPage(), 
+      home: const LoginPage(),
     );
   }
 }

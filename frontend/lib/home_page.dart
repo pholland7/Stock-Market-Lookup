@@ -1,6 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,11 +19,19 @@ class _HomePageState extends State<HomePage> {
   String financials = '';
   String netIncome = '';
   String operatingIncome = '';
+  String BASE_URL =
+      'https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api';
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  String formatCurrency(num number) {
+    final format =
+        NumberFormat.currency(locale: "en_US", symbol: "\$", decimalDigits: 0);
+    return format.format(number);
   }
 
   Future<void> fetchData(String input) async {
@@ -43,10 +54,10 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<dynamic> getGrossProfit (String input) async{
-    final response = await http
-      .get(Uri.parse('https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api/gross_profit/' + input));
-    final grossProfit = jsonDecode(response.body)["grossProfit"];
+  Future<dynamic> getGrossProfit(String input) async {
+    final response = await http.get(Uri.parse('$BASE_URL/gross_profit/$input'));
+    final grossProfit =
+        formatCurrency(jsonDecode(response.body)["grossProfit"]);
     if (response.statusCode == 200) {
       return grossProfit;
     } else {
@@ -54,21 +65,23 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<dynamic> getNews (String input) async{
-    final response = await http
-      .get(Uri.parse('https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api/news/' + input));
-    final newsStories = jsonDecode(response.body)[0][0];
+  Future<dynamic> getNews(String input) async {
+    final response = await http.get(Uri.parse('$BASE_URL/news/$input'));
     if (response.statusCode == 200) {
+      String newsStories = "";
+      for (int i = 0; i < jsonDecode(response.body).length; i++) {
+        newsStories += jsonDecode(response.body)[i][0] + '\n';
+      }
       return newsStories;
     } else {
       throw Exception('Failed to load news.');
     }
   }
 
-  Future<dynamic> getFinancials (String input) async{
-    final response = await http
-      .get(Uri.parse('https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api/financials/' + input));
-    final financials = jsonDecode(response.body)["netIncome"]["currentRatio"];
+  Future<dynamic> getFinancials(String input) async {
+    final response = await http.get(Uri.parse('$BASE_URL/financials/$input'));
+    final financials =
+        formatCurrency(jsonDecode(response.body)["netIncome"]["currentRatio"]);
     if (response.statusCode == 200) {
       return financials;
     } else {
@@ -76,10 +89,9 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<dynamic> getNetIncome (String input) async{
-    final response = await http
-      .get(Uri.parse('https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api/net_income/' + input));
-    final netIncome = jsonDecode(response.body)["netIncome"];
+  Future<dynamic> getNetIncome(String input) async {
+    final response = await http.get(Uri.parse('$BASE_URL/net_income/$input'));
+    final netIncome = formatCurrency(jsonDecode(response.body)["netIncome"]);
     if (response.statusCode == 200) {
       return netIncome;
     } else {
@@ -87,10 +99,11 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<dynamic> getOperatingIncome (String input) async{
-    final response = await http
-      .get(Uri.parse('https://stock-lookup-backend-87992ddeef5c.herokuapp.com/api/operating_income/' + input));
-    final operatingIncome = jsonDecode(response.body)["operatingIncome"];
+  Future<dynamic> getOperatingIncome(String input) async {
+    final response =
+        await http.get(Uri.parse('$BASE_URL/operating_income/$input'));
+    final operatingIncome =
+        formatCurrency(jsonDecode(response.body)["operatingIncome"]);
     if (response.statusCode == 200) {
       return operatingIncome;
     } else {
@@ -129,7 +142,20 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 20),
             Text(grossProfit),
-            Text(news),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: news,
+                    style: const TextStyle(color: Colors.blue),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        launchUrl(Uri.parse("https://www.google.com/"));
+                      },
+                  ),
+                ],
+              ),
+            ),
             Text(financials),
             Text(netIncome),
             Text(operatingIncome),
